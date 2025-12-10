@@ -1,0 +1,109 @@
+# IRIS FLOWER CLASSIFICATION
+
+import pandas as pd
+import numpy as np
+import seaborn as sns
+import matplotlib.pyplot as plt
+
+from sklearn.datasets import load_iris
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import StandardScaler
+from sklearn.metrics import accuracy_score, confusion_matrix, classification_report
+
+# ML Models
+from sklearn.linear_model import LogisticRegression
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.svm import SVC
+
+
+# LOAD DATASET
+iris = load_iris()
+df = pd.DataFrame(iris.data, columns=iris.feature_names)
+df["species"] = iris.target
+
+print("FIRST 5 ROWS")
+print(df.head())
+
+
+# EXPLORATORY DATA ANALYSIS
+print("\nDATA SUMMARY")
+print(df.describe())
+
+print("\nCLASS DISTRIBUTION")
+print(df["species"].value_counts())
+
+# Correlation Heatmap
+plt.figure(figsize=(8,6))
+sns.heatmap(df.corr(), annot=True, cmap="coolwarm")
+plt.title("Correlation Heatmap")
+plt.show()
+
+# PREPROCESSING
+X = df.iloc[:, :-1]   
+y = df.iloc[:, -1]
+
+# Feature Scaling
+scaler = StandardScaler()
+X_scaled = scaler.fit_transform(X)
+
+# Train-test split
+X_train, X_test, y_train, y_test = train_test_split(
+    X_scaled, y, test_size=0.3, random_state=42
+)
+
+
+# MODEL 1 — LOGISTIC REGRESSION
+log_model = LogisticRegression()
+log_model.fit(X_train, y_train)
+
+log_pred = log_model.predict(X_test)
+
+print("\nLOGISTIC REGRESSION")
+print("Accuracy:", accuracy_score(y_test, log_pred))
+print("Confusion Matrix:\n", confusion_matrix(y_test, log_pred))
+print("Classification Report:\n", classification_report(y_test, log_pred))
+
+
+# MODEL 2 — KNN CLASSIFIER
+knn_model = KNeighborsClassifier(n_neighbors=5)
+knn_model.fit(X_train, y_train)
+
+knn_pred = knn_model.predict(X_test)
+
+print("\nKNN CLASSIFIER")
+print("Accuracy:", accuracy_score(y_test, knn_pred))
+print("Confusion Matrix:\n", confusion_matrix(y_test, knn_pred))
+print("Classification Report:\n", classification_report(y_test, knn_pred))
+
+
+# MODEL 3 — DECISION TREE
+tree_model = DecisionTreeClassifier()
+tree_model.fit(X_train, y_train)
+
+tree_pred = tree_model.predict(X_test)
+
+print("\nDECISION TREE")
+print("Accuracy:", accuracy_score(y_test, tree_pred))
+print("Confusion Matrix:\n", confusion_matrix(y_test, tree_pred))
+print("Classification Report:\n", classification_report(y_test, tree_pred))
+
+
+# MODEL 4 — SUPPORT VECTOR MACHINE (SVM)
+svm_model = SVC()
+svm_model.fit(X_train, y_train)
+
+svm_pred = svm_model.predict(X_test)
+
+print("\nSVM CLASSIFIER")
+print("Accuracy:", accuracy_score(y_test, svm_pred))
+print("Confusion Matrix:\n", confusion_matrix(y_test, svm_pred))
+print("Classification Report:\n", classification_report(y_test, svm_pred))
+
+
+# FINAL ACCURACY COMPARISON
+print("\nACCURACY COMPARISON")
+print("Logistic Regression:", accuracy_score(y_test, log_pred))
+print("KNN:", accuracy_score(y_test, knn_pred))
+print("Decision Tree:", accuracy_score(y_test, tree_pred))
+print("SVM:", accuracy_score(y_test, svm_pred))
