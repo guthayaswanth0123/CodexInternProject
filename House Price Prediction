@@ -1,0 +1,110 @@
+# HOUSE PRICE PREDICTION (CALIFORNIA HOUSING DATASET)
+
+import pandas as pd
+import numpy as np
+import seaborn as sns
+import matplotlib.pyplot as plt
+
+from sklearn.datasets import fetch_california_housing
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import StandardScaler
+from sklearn.metrics import mean_squared_error, r2_score
+
+# Models
+from sklearn.linear_model import LinearRegression
+from sklearn.tree import DecisionTreeRegressor
+from sklearn.ensemble import RandomForestRegressor, GradientBoostingRegressor
+from sklearn.svm import SVR
+
+
+# LOAD DATASET
+housing = fetch_california_housing()
+df = pd.DataFrame(housing.data, columns=housing.feature_names)
+df["PRICE"] = housing.target
+
+print("FIRST 5 ROWS")
+print(df.head())
+
+
+# EDA
+print("\nDATA SUMMARY")
+print(df.describe())
+
+print("\nMISSING VALUES")
+print(df.isnull().sum())
+
+plt.figure(figsize=(10, 8))
+sns.heatmap(df.corr(), cmap="coolwarm")
+plt.title("Correlation Heatmap")
+plt.show()
+
+
+# PREPROCESSING
+X = df.drop("PRICE", axis=1)
+y = df["PRICE"]
+
+scaler = StandardScaler()
+X_scaled = scaler.fit_transform(X)
+
+X_train, X_test, y_train, y_test = train_test_split(
+    X_scaled, y, test_size=0.3, random_state=42
+)
+
+
+# MODEL 1 — LINEAR REGRESSION
+lr = LinearRegression()
+lr.fit(X_train, y_train)
+lr_pred = lr.predict(X_test)
+
+print("\nLINEAR REGRESSION")
+print("MSE:", mean_squared_error(y_test, lr_pred))
+print("R2 Score:", r2_score(y_test, lr_pred))
+
+
+# MODEL 2 — DECISION TREE
+dt = DecisionTreeRegressor()
+dt.fit(X_train, y_train)
+dt_pred = dt.predict(X_test)
+
+print("\nDECISION TREE")
+print("MSE:", mean_squared_error(y_test, dt_pred))
+print("R2 Score:", r2_score(y_test, dt_pred))
+
+
+# MODEL 3 — RANDOM FOREST
+rf = RandomForestRegressor()
+rf.fit(X_train, y_train)
+rf_pred = rf.predict(X_test)
+
+print("\nRANDOM FOREST")
+print("MSE:", mean_squared_error(y_test, rf_pred))
+print("R2 Score:", r2_score(y_test, rf_pred))
+
+
+# MODEL 4 — GRADIENT BOOSTING
+gb = GradientBoostingRegressor()
+gb.fit(X_train, y_train)
+gb_pred = gb.predict(X_test)
+
+print("\nGRADIENT BOOSTING")
+print("MSE:", mean_squared_error(y_test, gb_pred))
+print("R2 Score:", r2_score(y_test, gb_pred))
+
+
+# MODEL 5 — SUPPORT VECTOR REGRESSOR
+svr = SVR()
+svr.fit(X_train, y_train)
+svr_pred = svr.predict(X_test)
+
+print("\nSUPPORT VECTOR REGRESSOR")
+print("MSE:", mean_squared_error(y_test, svr_pred))
+print("R2 Score:", r2_score(y_test, svr_pred))
+
+
+# FINAL COMPARISON
+print("\nR2 SCORE COMPARISON")
+print("Linear Regression:", r2_score(y_test, lr_pred))
+print("Decision Tree:", r2_score(y_test, dt_pred))
+print("Random Forest:", r2_score(y_test, rf_pred))
+print("Gradient Boosting:", r2_score(y_test, gb_pred))
+print("SVR:", r2_score(y_test, svr_pred))
